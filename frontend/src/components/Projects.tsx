@@ -13,7 +13,6 @@ import {
 import {
   Launch,
   GitHub,
-  ArrowForward,
 } from '@mui/icons-material';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
