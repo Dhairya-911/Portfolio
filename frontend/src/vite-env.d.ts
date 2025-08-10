@@ -8,6 +8,9 @@ interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
 
+// React DOM Client declaration
+declare module 'react-dom/client';
+
 // Image imports
 declare module '*.jpg' {
   const src: string;
