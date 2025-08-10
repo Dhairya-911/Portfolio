@@ -9,10 +9,9 @@
   },
   "scripts": {
     "start": "node server.js",
-    "build": "echo 'This is a Node.js backend service - no build step needed'",
+    "build": "npm install",
     "dev": "nodemon server.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "vercel-build": "echo 'This is not a Vercel project - use npm start instead' && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "express",
