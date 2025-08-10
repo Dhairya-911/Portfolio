@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: portfolio-backend
+    runtime: node
+    buildCommand: npm ci --only=production
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+    buildFilter:
+      paths:
+      - package.json
+      - server.js
+      - routes/**
+      - models/**
+      - config/**
