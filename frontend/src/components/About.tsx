@@ -606,7 +606,7 @@ const About: React.FC = () => {
                 <Box
                   sx={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(3, 1fr)',
+                    gridTemplateColumns: 'repeat(2, 1fr)',
                     gap: 3,
                   }}
                 >
@@ -692,6 +692,34 @@ const About: React.FC = () => {
                     </Box>
                     <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
                       Render
+                    </Typography>
+                  </Box>
+
+                  <Box className="skill-item" sx={{ textAlign: 'center' }}>
+                    <Box
+                      sx={{
+                        width: 80,
+                        height: 80,
+                        mx: 'auto',
+                        mb: 2,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: 'linear-gradient(145deg, #1e1e1e, #2a2a2a)',
+                        borderRadius: '15px',
+                        color: '#007ACC',
+                        fontSize: '2.5rem',
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          transform: 'translateY(-5px)',
+                          boxShadow: '0 10px 30px rgba(0, 122, 204, 0.3)',
+                        },
+                      }}
+                    >
+                      💻
+                    </Box>
+                    <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
+                      VS Code
                     </Typography>
                   </Box>
                 </Box>

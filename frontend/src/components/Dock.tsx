@@ -17,6 +17,7 @@ interface DockItem {
 
 const Dock: React.FC = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [activeSection, setActiveSection] = useState<string>('home');
 
   const dockItems: DockItem[] = [
     { icon: Home, label: 'Home', href: '#home' },
@@ -33,6 +34,31 @@ const Dock: React.FC = () => {
       { y: 100, opacity: 0 },
       { y: 0, opacity: 1, duration: 1, delay: 0.5, ease: 'back.out(1.7)' }
     );
+
+    // Scroll listener for active section detection
+    const handleScroll = () => {
+      const sections = ['home', 'about', 'skills', 'projects', 'contact'];
+      const scrollPosition = window.scrollY + 100; // Offset for better detection
+      
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = document.getElementById(sections[i]);
+        if (section && section.offsetTop <= scrollPosition) {
+          setActiveSection(sections[i]);
+          break;
+        }
+      }
+    };
+
+    // Add scroll event listener
+    window.addEventListener('scroll', handleScroll);
+    
+    // Check initial position
+    handleScroll();
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
   const handleNavClick = (href: string) => {
@@ -103,34 +129,43 @@ const Dock: React.FC = () => {
       }}
       onMouseLeave={handleMouseLeave}
     >
-      {dockItems.map((item, index) => (
-        <Tooltip key={index} title={item.label} placement="top">
-          <IconButton
-            className={`dock-item-${index}`}
-            onClick={() => handleNavClick(item.href)}
-            onMouseEnter={() => handleMouseEnter(index)}
-            sx={{
-              width: 48,
-              height: 48,
-              borderRadius: '12px',
-              background: hoveredIndex === index 
-                ? 'linear-gradient(45deg, #00d4ff, #ff6b9d)'
-                : 'transparent',
-              color: hoveredIndex === index ? 'white' : 'text.primary',
-              transition: 'all 0.3s ease',
-              '&:hover': {
-                background: 'linear-gradient(45deg, #00d4ff, #ff6b9d)',
-                color: 'white',
-              },
-              '& .MuiSvgIcon-root': {
-                fontSize: '1.5rem',
-              },
-            }}
-          >
-            <item.icon />
-          </IconButton>
-        </Tooltip>
-      ))}
+      {dockItems.map((item, index) => {
+        const sectionName = item.href.replace('#', '');
+        const isActive = activeSection === sectionName;
+        
+        return (
+          <Tooltip key={index} title={item.label} placement="top">
+            <IconButton
+              className={`dock-item-${index}`}
+              onClick={() => handleNavClick(item.href)}
+              onMouseEnter={() => handleMouseEnter(index)}
+              sx={{
+                width: 48,
+                height: 48,
+                borderRadius: '12px',
+                background: isActive
+                  ? 'linear-gradient(45deg, #00d4ff, #ff6b9d)'
+                  : hoveredIndex === index 
+                    ? 'linear-gradient(45deg, #00d4ff, #ff6b9d)'
+                    : 'transparent',
+                color: (isActive || hoveredIndex === index) ? 'white' : 'text.primary',
+                transition: 'all 0.3s ease',
+                border: isActive ? '2px solid rgba(0, 212, 255, 0.5)' : 'none',
+                boxShadow: isActive ? '0 0 20px rgba(0, 212, 255, 0.3)' : 'none',
+                '&:hover': {
+                  background: 'linear-gradient(45deg, #00d4ff, #ff6b9d)',
+                  color: 'white',
+                },
+                '& .MuiSvgIcon-root': {
+                  fontSize: '1.5rem',
+                },
+              }}
+            >
+              <item.icon />
+            </IconButton>
+          </Tooltip>
+        );
+      })}
     </Box>
   );
 };
