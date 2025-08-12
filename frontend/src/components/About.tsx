@@ -665,6 +665,63 @@ const About: React.FC = () => {
                       Responsive Design
                     </Typography>
                   </Box>
+
+                  <Box className="skill-item" sx={{ textAlign: 'center' }}>
+                    <Box
+                      sx={{
+                        width: 80,
+                        height: 80,
+                        mx: 'auto',
+                        mb: 2,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: 'linear-gradient(145deg, #1e1e1e, #2a2a2a)',
+                        borderRadius: '15px',
+                        color: '#000000',
+                        backgroundColor: '#ffffff',
+                        fontSize: '2.5rem',
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          transform: 'translateY(-5px)',
+                          boxShadow: '0 10px 30px rgba(255, 255, 255, 0.3)',
+                        },
+                      }}
+                    >
+                      ▲
+                    </Box>
+                    <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
+                      Vercel
+                    </Typography>
+                  </Box>
+
+                  <Box className="skill-item" sx={{ textAlign: 'center' }}>
+                    <Box
+                      sx={{
+                        width: 80,
+                        height: 80,
+                        mx: 'auto',
+                        mb: 2,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: 'linear-gradient(145deg, #1e1e1e, #2a2a2a)',
+                        borderRadius: '15px',
+                        color: '#46E3B7',
+                        fontSize: '2.5rem',
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          transform: 'translateY(-5px)',
+                          boxShadow: '0 10px 30px rgba(70, 227, 183, 0.3)',
+                        },
+                      }}
+                    >
+                      🚀
+                    </Box>
+                    <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
+                      Render
+                    </Typography>
+                  </Box>
                 </Box>
               </Box>
             </Box>
