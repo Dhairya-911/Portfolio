@@ -32,6 +32,7 @@ const Projects: React.FC = () => {
       technologies: ['React', 'JavaScript', 'GSAP', 'Anime.js', 'HTML5', 'JWT tokens', 'Bcrypt', 'Cors', 'TypeScript', 'Node.js', 'MongoDB', 'Express', 'Material-UI'],
       image: proImage,
       githubUrl: 'https://github.com/Dhairya-911/todo-List-website',
+      liveUrl: 'https://todo-list-website-lime.vercel.app/',
     },
   ];
 
