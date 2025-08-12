@@ -18,6 +18,8 @@ interface DockItem {
 const Dock: React.FC = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [activeSection, setActiveSection] = useState<string>('home');
+  const [isScrolling, setIsScrolling] = useState<boolean>(false);
+  const [scrollTimer, setScrollTimer] = useState<number | null>(null);
 
   const dockItems: DockItem[] = [
     { icon: Home, label: 'Home', href: '#home' },
@@ -35,11 +37,37 @@ const Dock: React.FC = () => {
       { y: 0, opacity: 1, duration: 1, delay: 0.5, ease: 'back.out(1.7)' }
     );
 
-    // Scroll listener for active section detection
+    // Scroll listener for active section detection and fading animation
     const handleScroll = () => {
       const sections = ['home', 'about', 'skills', 'projects', 'contact'];
       const scrollPosition = window.scrollY + 100; // Offset for better detection
       
+      // Set scrolling state and animate opacity
+      setIsScrolling(true);
+      gsap.to('.dock-container', {
+        opacity: 0.4,
+        duration: 0.2,
+        ease: 'power2.out',
+      });
+      
+      // Clear existing timer
+      if (scrollTimer) {
+        clearTimeout(scrollTimer);
+      }
+      
+      // Set new timer to detect scroll end
+      const newTimer = window.setTimeout(() => {
+        setIsScrolling(false);
+        gsap.to('.dock-container', {
+          opacity: 1,
+          duration: 0.3,
+          ease: 'power2.out',
+        });
+      }, 150); // 150ms delay after scroll stops
+      
+      setScrollTimer(newTimer);
+      
+      // Active section detection
       for (let i = sections.length - 1; i >= 0; i--) {
         const section = document.getElementById(sections[i]);
         if (section && section.offsetTop <= scrollPosition) {
@@ -58,6 +86,9 @@ const Dock: React.FC = () => {
     // Cleanup
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      if (scrollTimer) {
+        clearTimeout(scrollTimer);
+      }
     };
   }, []);
 
@@ -70,6 +101,13 @@ const Dock: React.FC = () => {
 
   const handleMouseEnter = (index: number) => {
     setHoveredIndex(index);
+    
+    // Ensure dock is fully visible when hovering
+    gsap.to('.dock-container', {
+      opacity: 1,
+      duration: 0.2,
+      ease: 'power2.out',
+    });
     
     // Scale animation for hovered item
     gsap.to(`.dock-item-${index}`, {
@@ -106,6 +144,35 @@ const Dock: React.FC = () => {
         ease: 'back.out(1.7)',
       });
     });
+    
+    // Return to scroll-based opacity if currently scrolling
+    if (isScrolling) {
+      gsap.to('.dock-container', {
+        opacity: 0.4,
+        duration: 0.2,
+        ease: 'power2.out',
+      });
+    }
+  };
+
+  const handleDockMouseEnter = () => {
+    // Ensure dock is fully visible when hovering over the container
+    gsap.to('.dock-container', {
+      opacity: 1,
+      duration: 0.2,
+      ease: 'power2.out',
+    });
+  };
+
+  const handleDockMouseLeave = () => {
+    // Return to scroll-based opacity if currently scrolling
+    if (isScrolling) {
+      gsap.to('.dock-container', {
+        opacity: 0.4,
+        duration: 0.2,
+        ease: 'power2.out',
+      });
+    }
   };
 
   return (
@@ -127,7 +194,8 @@ const Dock: React.FC = () => {
         border: '1px solid rgba(255, 255, 255, 0.1)',
         boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
       }}
-      onMouseLeave={handleMouseLeave}
+      onMouseEnter={handleDockMouseEnter}
+      onMouseLeave={handleDockMouseLeave}
     >
       {dockItems.map((item, index) => {
         const sectionName = item.href.replace('#', '');
@@ -139,6 +207,7 @@ const Dock: React.FC = () => {
               className={`dock-item-${index}`}
               onClick={() => handleNavClick(item.href)}
               onMouseEnter={() => handleMouseEnter(index)}
+              onMouseLeave={handleMouseLeave}
               sx={{
                 width: 48,
                 height: 48,
