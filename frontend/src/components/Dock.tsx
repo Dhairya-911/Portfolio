@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Box, IconButton, Tooltip } from '@mui/material';
 import {
   Home,
@@ -18,6 +18,7 @@ interface DockItem {
 const Dock: React.FC = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [activeSection, setActiveSection] = useState<string>('home');
+  const activeSectionRef = useRef<string>('home');
 
   const dockItems: DockItem[] = [
     { icon: Home, label: 'Home', href: '#home' },
@@ -38,21 +39,30 @@ const Dock: React.FC = () => {
     // Enhanced scroll listener for active section detection and highlighting
     const handleScroll = () => {
       const sections = ['home', 'about', 'skills', 'projects', 'contact'];
-      const scrollPosition = window.scrollY + 100; // Offset for better detection
+      const scrollPosition = window.scrollY;
+      const windowHeight = window.innerHeight;
       
       let newActiveSection = 'home';
       
-      // Find the currently visible section
+      // Find the currently visible section with better detection
       for (let i = sections.length - 1; i >= 0; i--) {
         const section = document.getElementById(sections[i]);
-        if (section && section.offsetTop <= scrollPosition) {
-          newActiveSection = sections[i];
-          break;
+        if (section) {
+          const rect = section.getBoundingClientRect();
+          const sectionTop = section.offsetTop;
+          const sectionHeight = section.offsetHeight;
+          
+          // Section is considered active if it's in the top half of the viewport
+          if (scrollPosition >= sectionTop - windowHeight * 0.3) {
+            newActiveSection = sections[i];
+            break;
+          }
         }
       }
       
       // Only update and animate if section changed
-      if (newActiveSection !== activeSection) {
+      if (newActiveSection !== activeSectionRef.current) {
+        activeSectionRef.current = newActiveSection;
         setActiveSection(newActiveSection);
         
         // Find the dock item index for the new active section
@@ -99,22 +109,39 @@ const Dock: React.FC = () => {
       }
     };
 
-    // Add scroll event listener
-    window.addEventListener('scroll', handleScroll);
+    // Add throttled scroll event listener
+    let scrollTimeout: number | null = null;
+    const throttledHandleScroll = () => {
+      if (scrollTimeout) return;
+      scrollTimeout = window.setTimeout(() => {
+        handleScroll();
+        scrollTimeout = null;
+      }, 16); // ~60fps
+    };
+    
+    window.addEventListener('scroll', throttledHandleScroll, { passive: true });
     
     // Check initial position
     handleScroll();
 
     // Cleanup
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('scroll', throttledHandleScroll);
+      if (scrollTimeout) {
+        clearTimeout(scrollTimeout);
+      }
     };
   }, []);
 
   const handleNavClick = (href: string) => {
     const element = document.querySelector(href);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      
+      // Manually update active section when clicking
+      const sectionName = href.replace('#', '');
+      activeSectionRef.current = sectionName;
+      setActiveSection(sectionName);
     }
   };
 
