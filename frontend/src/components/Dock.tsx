@@ -17,10 +17,6 @@ interface DockItem {
 
 const Dock: React.FC = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [activeSection, setActiveSection] = useState<string>('home');
-  const activeSectionRef = useRef<string>('home');
-  const isProcessingRef = useRef<boolean>(false);
-  const animationTimelineRef = useRef<gsap.core.Timeline | null>(null);
 
   const dockItems: DockItem[] = [
     { icon: Home, label: 'Home', href: '#home' },
@@ -31,7 +27,7 @@ const Dock: React.FC = () => {
   ];
 
   useEffect(() => {
-    // Initial entrance animation
+    // Simple entrance animation only
     gsap.set('.dock-container', { 
       y: 100, 
       opacity: 0,
@@ -44,103 +40,12 @@ const Dock: React.FC = () => {
       delay: 0.5,
       ease: 'back.out(1.4)',
     });
-
-    // Wait for DOM to be ready
-    const timer = setTimeout(() => {
-      const observerOptions = {
-        root: null,
-        rootMargin: '-10% 0px -10% 0px',
-        threshold: [0.1, 0.5, 0.9],
-      };
-
-      const sections = document.querySelectorAll('#home, #about, #skills, #projects, #contact');
-      
-      const observer = new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
-        if (isProcessingRef.current) return;
-        
-        // Find the most visible section
-        const visibleEntries = entries.filter(entry => entry.isIntersecting);
-        
-        if (visibleEntries.length === 0) return;
-        
-        // Get the entry with highest intersection ratio
-        const mostVisible = visibleEntries.reduce((prev, current) => 
-          current.intersectionRatio > prev.intersectionRatio ? current : prev
-        );
-        
-        if (mostVisible.intersectionRatio > 0.1) {
-          const sectionId = (mostVisible.target as HTMLElement).id;
-          
-          if (sectionId !== activeSectionRef.current) {
-            isProcessingRef.current = true;
-            activeSectionRef.current = sectionId;
-            setActiveSection(sectionId);
-            
-            const activeItemIndex = dockItems.findIndex(item => 
-              item.href === `#${sectionId}`
-            );
-            
-            if (activeItemIndex !== -1) {
-              // Reset all items
-              gsap.set('.dock-item', {
-                scale: 1,
-                y: 0,
-              });
-              
-              // Animate active item
-              gsap.to(`.dock-item-${activeItemIndex}`, {
-                scale: 1.15,
-                y: -3,
-                duration: 0.3,
-                ease: 'back.out(1.3)',
-              });
-            }
-            
-            setTimeout(() => {
-              isProcessingRef.current = false;
-            }, 200);
-          }
-        }
-      }, observerOptions);
-
-      // Observe all sections
-      sections.forEach(section => observer.observe(section));
-
-      // Cleanup function
-      return () => {
-        observer.disconnect();
-        if (animationTimelineRef.current) {
-          animationTimelineRef.current.kill();
-        }
-      };
-    }, 1000); // Wait 1 second for all components to mount
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [dockItems]);
+  }, []);
 
   const handleNavClick = (href: string) => {
     const element = document.querySelector(href);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      
-      // Manually update active section
-      const sectionName = href.replace('#', '');
-      activeSectionRef.current = sectionName;
-      setActiveSection(sectionName);
-      
-      // Animate the clicked item immediately
-      const activeItemIndex = dockItems.findIndex(item => item.href === href);
-      if (activeItemIndex !== -1) {
-        gsap.set('.dock-item', { scale: 1, y: 0 });
-        gsap.to(`.dock-item-${activeItemIndex}`, {
-          scale: 1.15,
-          y: -3,
-          duration: 0.3,
-          ease: 'back.out(1.3)',
-        });
-      }
     }
   };
 
@@ -177,19 +82,16 @@ const Dock: React.FC = () => {
   const handleMouseLeave = useCallback(() => {
     setHoveredIndex(null);
     
-    // Reset all items to their appropriate states
+    // Reset all items to normal state
     dockItems.forEach((item, index) => {
-      const sectionName = item.href.replace('#', '');
-      const isActive = activeSection === sectionName;
-      
       gsap.to(`.dock-item-${index}`, {
-        scale: isActive ? 1.15 : 1,
-        y: isActive ? -3 : 0,
+        scale: 1,
+        y: 0,
         duration: 0.25,
         ease: 'power2.out',
       });
     });
-  }, [activeSection, dockItems]);
+  }, [dockItems]);
 
   return (
     <Box
@@ -221,9 +123,6 @@ const Dock: React.FC = () => {
       }}
     >
       {dockItems.map((item, index) => {
-        const sectionName = item.href.replace('#', '');
-        const isActive = activeSection === sectionName;
-        
         return (
           <Tooltip key={index} title={item.label} placement="top">
             <IconButton
@@ -235,14 +134,12 @@ const Dock: React.FC = () => {
                 width: 50,
                 height: 50,
                 borderRadius: '15px',
-                background: isActive
+                background: hoveredIndex === index 
                   ? 'linear-gradient(135deg, #00d4ff, #ff6b9d)'
-                  : hoveredIndex === index 
-                    ? 'linear-gradient(135deg, #00d4ff, #ff6b9d)'
-                    : 'transparent',
-                color: (isActive || hoveredIndex === index) ? 'white' : 'text.primary',
+                  : 'transparent',
+                color: hoveredIndex === index ? 'white' : 'text.primary',
                 transition: 'background 0.2s ease, color 0.2s ease',
-                border: isActive ? '2px solid rgba(0, 212, 255, 0.6)' : '2px solid transparent',
+                border: '2px solid transparent',
                 willChange: 'transform',
                 backfaceVisibility: 'hidden',
                 '&:hover': {
@@ -251,7 +148,7 @@ const Dock: React.FC = () => {
                 },
                 '& .MuiSvgIcon-root': {
                   fontSize: '1.6rem',
-                  transition: 'none', // Remove transitions to prevent conflicts
+                  transition: 'none',
                 },
               }}
             >
