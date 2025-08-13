@@ -272,7 +272,7 @@ const Contact: React.FC = () => {
 
               <TextField
                 fullWidth
-                label="Your Message"
+                label="Your Message (Minimum 5 characters)"
                 name="message"
                 value={formData.message}
                 onChange={handleInputChange}
