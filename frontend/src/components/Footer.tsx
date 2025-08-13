@@ -3,7 +3,7 @@ import {
   Box,
   Container,
   Typography,
-  Grid2 as Grid,
+  Grid,
   Link,
   IconButton,
   Divider,
@@ -85,7 +85,7 @@ const Footer: React.FC = () => {
         {/* Main Footer Content */}
         <Grid container spacing={4} sx={{ py: 6 }}>
           {/* Brand Section */}
-          <Grid xs={12} md={4}>
+          <Grid item xs={12} md={4} component="div">
             <Box sx={{ mb: 3 }}>
               <Typography
                 variant="h4"
@@ -146,7 +146,7 @@ const Footer: React.FC = () => {
           </Grid>
 
           {/* Quick Links */}
-          <Grid xs={12} sm={6} md={2}>
+          <Grid item xs={12} sm={6} md={2} component="div">
             <Typography
               variant="h6"
               sx={{
@@ -180,7 +180,7 @@ const Footer: React.FC = () => {
           </Grid>
 
           {/* Contact Info */}
-          <Grid xs={12} sm={6} md={3}>
+          <Grid item xs={12} sm={6} md={3} component="div">
             <Typography
               variant="h6"
               sx={{
@@ -216,7 +216,7 @@ const Footer: React.FC = () => {
           </Grid>
 
           {/* Technologies */}
-          <Grid xs={12} md={3}>
+          <Grid item xs={12} md={3} component="div">
             <Typography
               variant="h6"
               sx={{
