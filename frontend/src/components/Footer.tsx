@@ -3,7 +3,6 @@ import {
   Box,
   Container,
   Typography,
-  Grid,
   Link,
   IconButton,
   Divider,
@@ -83,9 +82,20 @@ const Footer: React.FC = () => {
     >
       <Container maxWidth="lg">
         {/* Main Footer Content */}
-        <Grid container spacing={4} sx={{ py: 6 }}>
+        <Box 
+          sx={{ 
+            py: 6,
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 4,
+            '& > *': {
+              minWidth: { xs: '100%', sm: '250px' },
+              flex: { xs: '1 1 100%', md: '1 1 auto' }
+            }
+          }}
+        >
           {/* Brand Section */}
-          <Grid item xs={12} md={4} component="div">
+          <Box sx={{ flex: { xs: '1 1 100%', md: '2 1 300px' } }}>
             <Box sx={{ mb: 3 }}>
               <Typography
                 variant="h4"
@@ -143,10 +153,10 @@ const Footer: React.FC = () => {
                 ))}
               </Box>
             </Box>
-          </Grid>
+          </Box>
 
           {/* Quick Links */}
-          <Grid item xs={12} sm={6} md={2} component="div">
+          <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 200px', md: '1 1 150px' } }}>
             <Typography
               variant="h6"
               sx={{
@@ -177,10 +187,10 @@ const Footer: React.FC = () => {
                 </Link>
               ))}
             </Box>
-          </Grid>
+          </Box>
 
           {/* Contact Info */}
-          <Grid item xs={12} sm={6} md={3} component="div">
+          <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 200px', md: '1 1 200px' } }}>
             <Typography
               variant="h6"
               sx={{
@@ -213,10 +223,10 @@ const Footer: React.FC = () => {
                 </Typography>
               </Box>
             </Box>
-          </Grid>
+          </Box>
 
           {/* Technologies */}
-          <Grid item xs={12} md={3} component="div">
+          <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 200px' } }}>
             <Typography
               variant="h6"
               sx={{
@@ -246,8 +256,8 @@ const Footer: React.FC = () => {
                 </Box>
               ))}
             </Box>
-          </Grid>
-        </Grid>
+          </Box>
+        </Box>
 
         <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.1)' }} />
 
