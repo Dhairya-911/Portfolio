@@ -1,33 +1,198 @@
-# Portfolio Website
+# Portfolio Frontend 🎨
 
-A modern, responsive portfolio website built with React, TypeScript, and advanced animations using GSAP, MUI, and Anime.js.
+Modern React TypeScript frontend for Dhairya Solanki's portfolio website. Features a sleek design with smooth animations, interactive dock navigation, and responsive components.
 
-## 🚀 Features
+## 🌐 Live Demo
 
-- **Modern Design**: Clean, professional layout with dark theme
-- **Responsive**: Fully responsive design that works on all devices
-- **Animations**: Smooth animations using GSAP and Anime.js
-- **Contact Form**: Functional contact form with validation
-- **Material-UI**: Beautiful components and theming with MUI
-- **TypeScript**: Fully typed for better development experience
-- **Performance**: Optimized for fast loading and smooth interactions
+[https://solankidhairya.vercel.app](https://solankidhairya.vercel.app)
+
+## ✨ Features
+
+- 🎨 **Modern Glassmorphism Design**: Clean, professional UI with backdrop blur effects
+- 📱 **Fully Responsive**: Optimized for desktop, tablet, and mobile devices
+- ⚡ **GSAP Animations**: Smooth, GPU-accelerated animations and transitions
+- 🧭 **Interactive Dock**: macOS-style navigation dock with hover effects
+- 🎯 **Smooth Scrolling**: Seamless navigation between sections
+- 💼 **Project Showcase**: Interactive project cards with live demo links
+- 🛠️ **Skills Display**: Professional icons in organized grid layout
+- 📧 **Contact Form**: Real-time validation with backend integration
+- 🦶 **Comprehensive Footer**: Social links, navigation, and contact info
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: React 18, TypeScript, Vite
-- **Styling**: Material-UI (MUI), Emotion
-- **Animations**: GSAP, Anime.js
-- **Build Tool**: Vite
-- **Package Manager**: npm
+- **Framework**: React 18 with TypeScript
+- **Build Tool**: Vite (fast development and building)
+- **UI Library**: Material-UI (MUI) v7
+- **Icons**: Material-UI Icons
+- **Animations**: GSAP (GreenSock Animation Platform)
+- **Styling**: CSS-in-JS with MUI's sx prop system
+- **Type Safety**: Full TypeScript implementation
 
-## 📂 Project Structure
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js v20 or higher
+- npm or yarn
+
+### Installation
+
+1. **Clone and navigate to frontend**
+   ```bash
+   git clone https://github.com/Dhairya-911/Portfolio.git
+   cd Portfolio/frontend
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Environment setup**
+   ```bash
+   # Create .env file
+   VITE_API_URL=http://localhost:5000
+   # For production: https://portfolio-v8ez.onrender.com
+   ```
+
+4. **Start development server**
+   ```bash
+   npm run dev
+   ```
+
+5. **Open in browser**
+   ```
+   http://localhost:5173
+   ```
+
+## 📁 Project Structure
 
 ```
 src/
-├── components/          # React components
-│   ├── Navbar.tsx      # Navigation component
-│   ├── Hero.tsx        # Hero section
-│   ├── About.tsx       # About section
+├── components/           # React components
+│   ├── Hero.tsx         # Landing section with hero content
+│   ├── About.tsx        # About me and skills section
+│   ├── Projects.tsx     # Project showcase with live links
+│   ├── Contact.tsx      # Contact form with validation
+│   ├── Footer.tsx       # Footer with social links
+│   └── Dock.tsx         # Navigation dock component
+├── animations/          # GSAP animation utilities
+│   └── GSAPAnimations.ts # Reusable animation functions
+├── types/              # TypeScript type definitions
+│   └── index.ts        # Project-wide types
+├── theme.ts            # Material-UI theme configuration
+├── App.tsx             # Main app component
+└── main.tsx           # Application entry point
+```
+
+## 🎨 Component Overview
+
+### Hero Component
+- Animated introduction text
+- Call-to-action buttons
+- Responsive hero image/content
+- Smooth scroll integration
+
+### About Component  
+- Personal introduction
+- Skills showcase with Material-UI icons
+- Organized in responsive grid layout
+- Frontend, backend, and tools categories
+
+### Projects Component
+- Interactive project cards
+- Live demo and GitHub links
+- Responsive grid layout
+- Hover animations and effects
+
+### Contact Component
+- Real-time form validation
+- Backend API integration
+- Success/error feedback
+- Professional contact information
+
+### Dock Component
+- macOS-style navigation
+- Hover animations
+- Smooth scroll to sections
+- Glassmorphism design
+
+### Footer Component
+- Social media links
+- Quick navigation
+- Contact information
+- Technology badges
+
+## 🎭 Animation Features
+
+- **GSAP Integration**: High-performance animations
+- **Scroll Triggers**: Elements animate on scroll
+- **Hover Effects**: Interactive component states
+- **Entrance Animations**: Smooth page load transitions
+- **GPU Acceleration**: Optimized for smooth performance
+
+## � Build & Deploy
+
+### Development
+```bash
+npm run dev          # Start dev server
+npm run build        # Build for production
+npm run preview      # Preview production build
+npm run lint         # Run ESLint
+```
+
+### Deployment (Vercel)
+1. Connect GitHub repository to Vercel
+2. Set environment variables:
+   - `VITE_API_URL=https://portfolio-v8ez.onrender.com`
+3. Deploy automatically on push to main
+
+## 🎨 Customization
+
+### Theme
+Edit `src/theme.ts` to customize:
+- Color palette
+- Typography
+- Component styles
+- Breakpoints
+
+### Animations
+Modify `src/animations/GSAPAnimations.ts` for:
+- Custom animation functions
+- Timing adjustments
+- Effect variations
+
+### Components
+Each component in `src/components/` can be customized:
+- Update content in component files
+- Modify styling with MUI sx props
+- Adjust responsive breakpoints
+
+## 📱 Responsive Design
+
+- **Mobile First**: Designed for mobile, enhanced for desktop
+- **Breakpoints**: sm (600px), md (900px), lg (1200px), xl (1536px)
+- **Flexible Layouts**: CSS Grid and Flexbox
+- **Touch Optimized**: Mobile-friendly interactions
+
+## ⚡ Performance
+
+- **Vite**: Fast development and building
+- **Code Splitting**: Automatic chunk splitting
+- **Asset Optimization**: Optimized images and resources
+- **GPU Acceleration**: Hardware-accelerated animations
+- **Tree Shaking**: Unused code elimination
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
+
+---
+
+Built with ❤️ by [Dhairya Solanki](https://github.com/Dhairya-911)
 │   ├── Projects.tsx    # Projects showcase
 │   └── Contact.tsx     # Contact form
 ├── types/              # TypeScript type definitions
