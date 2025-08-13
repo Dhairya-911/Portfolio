@@ -10,6 +10,17 @@ import {
   Devices,
   Speed,
   Security,
+  Html,
+  Css,
+  JavaScript,
+  GitHub,
+  Storage,
+  DataObject,
+  Api,
+  VpnKey,
+  Terminal,
+  Cloud,
+  Computer,
 } from '@mui/icons-material';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -276,7 +287,7 @@ const About: React.FC = () => {
                         },
                       }}
                     >
-                      📄
+                      <Html sx={{ fontSize: '2.5rem' }} />
                     </Box>
                     <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
                       HTML5
@@ -304,7 +315,7 @@ const About: React.FC = () => {
                         },
                       }}
                     >
-                      🎨
+                      <Css sx={{ fontSize: '2.5rem' }} />
                     </Box>
                     <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
                       CSS3
@@ -332,7 +343,7 @@ const About: React.FC = () => {
                         },
                       }}
                     >
-                      JS
+                      <JavaScript sx={{ fontSize: '2.5rem' }} />
                     </Box>
                     <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
                       JavaScript
@@ -360,7 +371,7 @@ const About: React.FC = () => {
                         },
                       }}
                     >
-                      ⚛️
+                      <Code sx={{ fontSize: '2.5rem' }} />
                     </Box>
                     <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
                       React
@@ -389,7 +400,7 @@ const About: React.FC = () => {
                         },
                       }}
                     >
-                      B
+                      <Css sx={{ fontSize: '2.5rem' }} />
                     </Box>
                     <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
                       Tailwind CSS
@@ -439,7 +450,7 @@ const About: React.FC = () => {
                         },
                       }}
                     >
-                      🟢
+                      <Terminal sx={{ fontSize: '2.5rem' }} />
                     </Box>
                     <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
                       Node.js
@@ -467,7 +478,7 @@ const About: React.FC = () => {
                         },
                       }}
                     >
-                      🍃
+                      <Storage sx={{ fontSize: '2.5rem' }} />
                     </Box>
                     <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
                       MongoDB
@@ -495,7 +506,7 @@ const About: React.FC = () => {
                         },
                       }}
                     >
-                      🗄️
+                      <DataObject sx={{ fontSize: '2.5rem' }} />
                     </Box>
                     <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
                       MySQL
@@ -523,7 +534,7 @@ const About: React.FC = () => {
                         },
                       }}
                     >
-                      ⚡
+                      <Speed sx={{ fontSize: '2.5rem' }} />
                     </Box>
                     <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
                       Express.js
@@ -552,7 +563,7 @@ const About: React.FC = () => {
                         },
                       }}
                     >
-                      &lt;/&gt;
+                      <Api sx={{ fontSize: '2.5rem' }} />
                     </Box>
                     <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
                       REST APIs
@@ -581,7 +592,7 @@ const About: React.FC = () => {
                         },
                       }}
                     >
-                      JWT
+                      <VpnKey sx={{ fontSize: '2.5rem' }} />
                     </Box>
                     <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
                       JWT Auth
@@ -631,7 +642,7 @@ const About: React.FC = () => {
                         },
                       }}
                     >
-                      🐙
+                      <GitHub sx={{ fontSize: '2.5rem' }} />
                     </Box>
                     <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
                       GitHub
@@ -660,7 +671,7 @@ const About: React.FC = () => {
                         },
                       }}
                     >
-                      ▲
+                      <Cloud sx={{ fontSize: '2.5rem' }} />
                     </Box>
                     <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
                       Vercel
@@ -688,7 +699,7 @@ const About: React.FC = () => {
                         },
                       }}
                     >
-                      🚀
+                      <Cloud sx={{ fontSize: '2.5rem' }} />
                     </Box>
                     <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
                       Render
@@ -716,7 +727,7 @@ const About: React.FC = () => {
                         },
                       }}
                     >
-                      💻
+                      <Computer sx={{ fontSize: '2.5rem' }} />
                     </Box>
                     <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
                       VS Code
