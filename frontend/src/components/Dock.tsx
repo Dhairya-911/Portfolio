@@ -31,47 +31,48 @@ const Dock: React.FC = () => {
   ];
 
   useEffect(() => {
-    // Optimized dock entrance animation
+    // Initial entrance animation
     gsap.set('.dock-container', { 
       y: 100, 
       opacity: 0,
-      scale: 0.8,
-      transformOrigin: 'center bottom'
     });
     
     gsap.to('.dock-container', {
       y: 0,
       opacity: 1,
-      scale: 1,
       duration: 0.8,
-      delay: 0.3,
+      delay: 0.5,
       ease: 'back.out(1.4)',
-      force3D: true, // GPU acceleration
     });
 
-    // Simplified Intersection Observer
-    const observerOptions = {
-      root: null,
-      rootMargin: '-20% 0px -20% 0px',
-      threshold: 0.5,
-    };
+    // Wait for DOM to be ready
+    const timer = setTimeout(() => {
+      const observerOptions = {
+        root: null,
+        rootMargin: '-10% 0px -10% 0px',
+        threshold: [0.1, 0.5, 0.9],
+      };
 
-    const sections = ['home', 'about', 'skills', 'projects', 'contact'];
-    const sectionElements = sections.map(id => document.getElementById(id)).filter(el => el !== null);
-
-    const observer = new IntersectionObserver((entries) => {
-      if (isProcessingRef.current) return;
-      isProcessingRef.current = true;
+      const sections = document.querySelectorAll('#home, #about, #skills, #projects, #contact');
       
-      setTimeout(() => {
-        const visibleEntries = entries
-          .filter(entry => entry.isIntersecting && entry.intersectionRatio > 0.3)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+      const observer = new IntersectionObserver((entries) => {
+        if (isProcessingRef.current) return;
         
-        if (visibleEntries.length > 0) {
-          const sectionId = visibleEntries[0].target.id;
+        let maxRatio = 0;
+        let activeEntry: IntersectionObserverEntry | null = null;
+        
+        entries.forEach(entry => {
+          if (entry.isIntersecting && entry.intersectionRatio > maxRatio) {
+            maxRatio = entry.intersectionRatio;
+            activeEntry = entry;
+          }
+        });
+        
+        if (activeEntry && maxRatio > 0.1) {
+          const sectionId = activeEntry.target.id;
           
           if (sectionId !== activeSectionRef.current) {
+            isProcessingRef.current = true;
             activeSectionRef.current = sectionId;
             setActiveSection(sectionId);
             
@@ -80,43 +81,42 @@ const Dock: React.FC = () => {
             );
             
             if (activeItemIndex !== -1) {
-              // Kill any existing timeline
-              if (animationTimelineRef.current) {
-                animationTimelineRef.current.kill();
-              }
-              
-              // Simple active item animation
-              gsap.set(dockItems.map((_, index) => `.dock-item-${index}`), {
+              // Reset all items
+              gsap.set('.dock-item', {
                 scale: 1,
                 y: 0,
               });
               
+              // Animate active item
               gsap.to(`.dock-item-${activeItemIndex}`, {
-                scale: 1.2,
-                y: -2,
+                scale: 1.15,
+                y: -3,
                 duration: 0.3,
-                ease: 'back.out(1.2)',
-                force3D: true,
+                ease: 'back.out(1.3)',
               });
             }
+            
+            setTimeout(() => {
+              isProcessingRef.current = false;
+            }, 200);
           }
         }
-        
-        isProcessingRef.current = false;
-      }, 100);
-    }, observerOptions);
+      }, observerOptions);
 
-    // Observe all sections
-    sectionElements.forEach(section => {
-      observer.observe(section);
-    });
+      // Observe all sections
+      sections.forEach(section => observer.observe(section));
 
-    // Cleanup function
+      // Cleanup function
+      return () => {
+        observer.disconnect();
+        if (animationTimelineRef.current) {
+          animationTimelineRef.current.kill();
+        }
+      };
+    }, 1000); // Wait 1 second for all components to mount
+
     return () => {
-      if (animationTimelineRef.current) {
-        animationTimelineRef.current.kill();
-      }
-      observer.disconnect();
+      clearTimeout(timer);
     };
   }, [dockItems]);
 
@@ -125,10 +125,22 @@ const Dock: React.FC = () => {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
       
-      // Manually update active section when clicking
+      // Manually update active section
       const sectionName = href.replace('#', '');
       activeSectionRef.current = sectionName;
       setActiveSection(sectionName);
+      
+      // Animate the clicked item immediately
+      const activeItemIndex = dockItems.findIndex(item => item.href === href);
+      if (activeItemIndex !== -1) {
+        gsap.set('.dock-item', { scale: 1, y: 0 });
+        gsap.to(`.dock-item-${activeItemIndex}`, {
+          scale: 1.15,
+          y: -3,
+          duration: 0.3,
+          ease: 'back.out(1.3)',
+        });
+      }
     }
   };
 
@@ -136,36 +148,28 @@ const Dock: React.FC = () => {
     if (hoveredIndex === index) return;
     setHoveredIndex(index);
     
-    // Kill any existing animations to prevent conflicts
-    if (animationTimelineRef.current) {
-      animationTimelineRef.current.kill();
-    }
-    
-    // Simple hover animation without complex effects
+    // Simple hover animation
     gsap.to(`.dock-item-${index}`, {
-      scale: 1.4,
-      y: -4,
-      duration: 0.25,
+      scale: 1.3,
+      y: -5,
+      duration: 0.2,
       ease: 'power2.out',
-      force3D: true,
     });
     
-    // Subtle effect on adjacent items
+    // Small effect on adjacent items
     if (index > 0) {
       gsap.to(`.dock-item-${index - 1}`, {
-        scale: 1.1,
+        scale: 1.05,
         duration: 0.2,
         ease: 'power2.out',
-        force3D: true,
       });
     }
     
     if (index < dockItems.length - 1) {
       gsap.to(`.dock-item-${index + 1}`, {
-        scale: 1.1,
+        scale: 1.05,
         duration: 0.2,
         ease: 'power2.out',
-        force3D: true,
       });
     }
   }, [hoveredIndex, dockItems.length]);
@@ -179,11 +183,10 @@ const Dock: React.FC = () => {
       const isActive = activeSection === sectionName;
       
       gsap.to(`.dock-item-${index}`, {
-        scale: isActive ? 1.2 : 1,
-        y: isActive ? -2 : 0,
-        duration: 0.3,
+        scale: isActive ? 1.15 : 1,
+        y: isActive ? -3 : 0,
+        duration: 0.25,
         ease: 'power2.out',
-        force3D: true,
       });
     });
   }, [activeSection, dockItems]);
@@ -224,7 +227,7 @@ const Dock: React.FC = () => {
         return (
           <Tooltip key={index} title={item.label} placement="top">
             <IconButton
-              className={`dock-item-${index}`}
+              className={`dock-item dock-item-${index}`}
               onClick={() => handleNavClick(item.href)}
               onMouseEnter={() => handleMouseEnter(index)}
               onMouseLeave={handleMouseLeave}
