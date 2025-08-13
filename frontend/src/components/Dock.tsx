@@ -20,6 +20,7 @@ const Dock: React.FC = () => {
   const [activeSection, setActiveSection] = useState<string>('home');
   const activeSectionRef = useRef<string>('home');
   const isProcessingRef = useRef<boolean>(false);
+  const animationTimelineRef = useRef<gsap.core.Timeline | null>(null);
 
   const dockItems: DockItem[] = [
     { icon: Home, label: 'Home', href: '#home' },
@@ -48,98 +49,27 @@ const Dock: React.FC = () => {
       force3D: true, // GPU acceleration
     });
 
-    // Optimized Intersection Observer for better performance
+    // Simplified Intersection Observer
     const observerOptions = {
       root: null,
-      rootMargin: '-30% 0px -30% 0px', // Balanced detection zone
-      threshold: [0, 0.25, 0.5, 0.75], // More granular thresholds for smoother transitions
+      rootMargin: '-20% 0px -20% 0px',
+      threshold: 0.5,
     };
 
     const sections = ['home', 'about', 'skills', 'projects', 'contact'];
     const sectionElements = sections.map(id => document.getElementById(id)).filter(el => el !== null);
 
-    // Optimized animation function with batching
-    const animateActiveItem = (activeItemIndex: number) => {
-      // Create a timeline for batched animations
-      const tl = gsap.timeline();
-      
-      // Batch all scale resets
-      const resetTargets = dockItems.map((_, index) => `.dock-item-${index}`);
-      tl.to(resetTargets, {
-        scale: 1,
-        duration: 0.25,
-        ease: 'power2.out',
-        stagger: 0.02,
-        force3D: true,
-      });
-      
-      // Animate active item with enhanced effects
-      tl.to(`.dock-item-${activeItemIndex}`, {
-        scale: 1.25,
-        y: -3,
-        duration: 0.35,
-        ease: 'back.out(1.5)',
-        force3D: true,
-      }, '-=0.15');
-      
-      // Enhanced glow animation with better performance
-      tl.to(`.dock-item-${activeItemIndex} .MuiSvgIcon-root`, {
-        filter: 'drop-shadow(0 0 12px rgba(0, 212, 255, 0.8)) drop-shadow(0 0 25px rgba(0, 212, 255, 0.4))',
-        duration: 0.3,
-        ease: 'power2.out',
-      }, '-=0.2');
-      
-      // Remove glow from other items (batched)
-      const otherTargets = dockItems
-        .map((_, index) => index !== activeItemIndex ? `.dock-item-${index} .MuiSvgIcon-root` : null)
-        .filter(Boolean);
-      
-      if (otherTargets.length > 0) {
-        tl.to(otherTargets, {
-          filter: 'none',
-          duration: 0.25,
-          ease: 'power2.out',
-          stagger: 0.01,
-        }, '-=0.25');
-      }
-      
-      return tl;
-    };
-
     const observer = new IntersectionObserver((entries) => {
-      // Debounce rapid intersection changes
       if (isProcessingRef.current) return;
       isProcessingRef.current = true;
       
-      requestAnimationFrame(() => {
-        // Sort entries by intersection ratio to prioritize the most visible section
+      setTimeout(() => {
         const visibleEntries = entries
-          .filter(entry => entry.isIntersecting)
+          .filter(entry => entry.isIntersecting && entry.intersectionRatio > 0.3)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
         
         if (visibleEntries.length > 0) {
-          const mostVisibleEntry = visibleEntries[0];
-          const sectionId = mostVisibleEntry.target.id;
-          
-          // Enhanced nested section handling
-          if (sectionId === 'skills') {
-            const aboutSection = document.getElementById('about');
-            const skillsSection = document.getElementById('skills');
-            
-            if (aboutSection && skillsSection) {
-              const aboutRect = aboutSection.getBoundingClientRect();
-              const skillsRect = skillsSection.getBoundingClientRect();
-              
-              // More sophisticated positioning logic
-              const viewportCenter = window.innerHeight / 2;
-              const aboutProgress = Math.max(0, Math.min(1, (viewportCenter - aboutRect.top) / aboutRect.height));
-              
-              if (aboutProgress < 0.6) {
-                isProcessingRef.current = false;
-                return;
-              }
-            }
-          }
+          const sectionId = visibleEntries[0].target.id;
           
           if (sectionId !== activeSectionRef.current) {
             activeSectionRef.current = sectionId;
@@ -150,13 +80,30 @@ const Dock: React.FC = () => {
             );
             
             if (activeItemIndex !== -1) {
-              animateActiveItem(activeItemIndex);
+              // Kill any existing timeline
+              if (animationTimelineRef.current) {
+                animationTimelineRef.current.kill();
+              }
+              
+              // Simple active item animation
+              gsap.set(dockItems.map((_, index) => `.dock-item-${index}`), {
+                scale: 1,
+                y: 0,
+              });
+              
+              gsap.to(`.dock-item-${activeItemIndex}`, {
+                scale: 1.2,
+                y: -2,
+                duration: 0.3,
+                ease: 'back.out(1.2)',
+                force3D: true,
+              });
             }
           }
         }
         
         isProcessingRef.current = false;
-      });
+      }, 100);
     }, observerOptions);
 
     // Observe all sections
@@ -164,11 +111,14 @@ const Dock: React.FC = () => {
       observer.observe(section);
     });
 
-    // Cleanup
+    // Cleanup function
     return () => {
+      if (animationTimelineRef.current) {
+        animationTimelineRef.current.kill();
+      }
       observer.disconnect();
     };
-  }, []);
+  }, [dockItems]);
 
   const handleNavClick = (href: string) => {
     const element = document.querySelector(href);
@@ -182,92 +132,61 @@ const Dock: React.FC = () => {
     }
   };
 
-  const handleMouseEnter = (index: number) => {
-    if (hoveredIndex === index) return; // Avoid redundant animations
+  const handleMouseEnter = useCallback((index: number) => {
+    if (hoveredIndex === index) return;
     setHoveredIndex(index);
     
-    // Create optimized hover animation timeline
-    const tl = gsap.timeline();
+    // Kill any existing animations to prevent conflicts
+    if (animationTimelineRef.current) {
+      animationTimelineRef.current.kill();
+    }
     
-    // Enhanced hover effect with micro-interactions
-    tl.to(`.dock-item-${index}`, {
-      scale: 1.5,
-      y: -5,
-      duration: 0.35,
-      ease: 'back.out(1.6)',
+    // Simple hover animation without complex effects
+    gsap.to(`.dock-item-${index}`, {
+      scale: 1.4,
+      y: -4,
+      duration: 0.25,
+      ease: 'power2.out',
       force3D: true,
     });
     
-    // Subtle magnetic effect on adjacent items
+    // Subtle effect on adjacent items
     if (index > 0) {
-      tl.to(`.dock-item-${index - 1}`, {
-        scale: 1.15,
-        x: 3,
-        y: -2,
-        duration: 0.3,
+      gsap.to(`.dock-item-${index - 1}`, {
+        scale: 1.1,
+        duration: 0.2,
         ease: 'power2.out',
         force3D: true,
-      }, '-=0.25');
+      });
     }
     
     if (index < dockItems.length - 1) {
-      tl.to(`.dock-item-${index + 1}`, {
-        scale: 1.15,
-        x: -3,
-        y: -2,
+      gsap.to(`.dock-item-${index + 1}`, {
+        scale: 1.1,
+        duration: 0.2,
+        ease: 'power2.out',
+        force3D: true,
+      });
+    }
+  }, [hoveredIndex, dockItems.length]);
+
+  const handleMouseLeave = useCallback(() => {
+    setHoveredIndex(null);
+    
+    // Reset all items to their appropriate states
+    dockItems.forEach((item, index) => {
+      const sectionName = item.href.replace('#', '');
+      const isActive = activeSection === sectionName;
+      
+      gsap.to(`.dock-item-${index}`, {
+        scale: isActive ? 1.2 : 1,
+        y: isActive ? -2 : 0,
         duration: 0.3,
         ease: 'power2.out',
         force3D: true,
-      }, '-=0.25');
-    }
-    
-    // Enhanced glow on hover
-    tl.to(`.dock-item-${index} .MuiSvgIcon-root`, {
-      filter: 'drop-shadow(0 0 15px rgba(255, 255, 255, 0.8)) drop-shadow(0 0 30px rgba(0, 212, 255, 0.5))',
-      duration: 0.25,
-      ease: 'power2.out',
-    }, '-=0.2');
-  };
-
-  const handleMouseLeave = () => {
-    setHoveredIndex(null);
-    
-    // Create optimized leave animation timeline
-    const tl = gsap.timeline();
-    
-    // Reset all items with staggered animation for smooth effect
-    const allTargets = dockItems.map((_, index) => `.dock-item-${index}`);
-    
-    tl.to(allTargets, {
-      scale: (index: number) => {
-        const sectionName = dockItems[index].href.replace('#', '');
-        return activeSection === sectionName ? 1.25 : 1; // Return to active state or normal
-      },
-      x: 0,
-      y: (index: number) => {
-        const sectionName = dockItems[index].href.replace('#', '');
-        return activeSection === sectionName ? -3 : 0; // Maintain active lift
-      },
-      duration: 0.4,
-      ease: 'back.out(1.3)',
-      stagger: 0.03,
-      force3D: true,
+      });
     });
-    
-    // Reset icon filters
-    const iconTargets = dockItems.map((_, index) => `.dock-item-${index} .MuiSvgIcon-root`);
-    tl.to(iconTargets, {
-      filter: (index: number) => {
-        const sectionName = dockItems[index].href.replace('#', '');
-        return activeSection === sectionName ? 
-          'drop-shadow(0 0 12px rgba(0, 212, 255, 0.8)) drop-shadow(0 0 25px rgba(0, 212, 255, 0.4))' : 
-          'none';
-      },
-      duration: 0.3,
-      ease: 'power2.out',
-      stagger: 0.02,
-    }, '-=0.3');
-  };
+  }, [activeSection, dockItems]);
 
   return (
     <Box
@@ -319,29 +238,17 @@ const Dock: React.FC = () => {
                     ? 'linear-gradient(135deg, #00d4ff, #ff6b9d)'
                     : 'transparent',
                 color: (isActive || hoveredIndex === index) ? 'white' : 'text.primary',
-                transition: 'background 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s ease',
+                transition: 'background 0.2s ease, color 0.2s ease',
                 border: isActive ? '2px solid rgba(0, 212, 255, 0.6)' : '2px solid transparent',
-                boxShadow: isActive 
-                  ? '0 0 25px rgba(0, 212, 255, 0.4), 0 0 50px rgba(0, 212, 255, 0.2)' 
-                  : hoveredIndex === index 
-                    ? '0 0 20px rgba(0, 212, 255, 0.3)'
-                    : 'none',
-                willChange: 'transform, filter', // Optimize for animations
-                backfaceVisibility: 'hidden', // Prevent flickering
-                perspective: 1000, // 3D optimizations
+                willChange: 'transform',
+                backfaceVisibility: 'hidden',
                 '&:hover': {
                   background: 'linear-gradient(135deg, #00d4ff, #ff6b9d)',
                   color: 'white',
-                  transform: 'none', // Let GSAP handle transforms
-                },
-                '&:active': {
-                  transform: 'scale(0.95)',
-                  transition: 'transform 0.1s ease',
                 },
                 '& .MuiSvgIcon-root': {
                   fontSize: '1.6rem',
-                  transition: 'filter 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  willChange: 'filter',
+                  transition: 'none', // Remove transitions to prevent conflicts
                 },
               }}
             >
