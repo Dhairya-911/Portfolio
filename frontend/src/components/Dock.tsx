@@ -36,100 +36,101 @@ const Dock: React.FC = () => {
       { y: 0, opacity: 1, duration: 1, delay: 0.5, ease: 'back.out(1.7)' }
     );
 
-    // Enhanced scroll listener for active section detection and highlighting
-    const handleScroll = () => {
-      const sections = ['home', 'about', 'skills', 'projects', 'contact'];
-      const scrollPosition = window.scrollY;
-      const windowHeight = window.innerHeight;
+    // Use Intersection Observer for more reliable section detection
+    const observerOptions = {
+      root: null,
+      rootMargin: '-40% 0px -40% 0px', // More balanced detection - trigger when 40% visible
+      threshold: [0, 0.1, 0.5] // Multiple thresholds for better detection
+    };
+
+    const sections = ['home', 'about', 'skills', 'projects', 'contact'];
+    const sectionElements = sections.map(id => document.getElementById(id)).filter(el => el !== null);
+
+    const observer = new IntersectionObserver((entries) => {
+      // Sort entries by intersection ratio to prioritize the most visible section
+      const visibleEntries = entries
+        .filter(entry => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
       
-      let newActiveSection = 'home';
-      
-      // Find the currently visible section with better detection
-      for (let i = sections.length - 1; i >= 0; i--) {
-        const section = document.getElementById(sections[i]);
-        if (section) {
-          const rect = section.getBoundingClientRect();
-          const sectionTop = section.offsetTop;
-          const sectionHeight = section.offsetHeight;
+      if (visibleEntries.length > 0) {
+        const mostVisibleEntry = visibleEntries[0];
+        const sectionId = mostVisibleEntry.target.id;
+        
+        // Special handling for nested sections
+        // If skills section is visible but about section is also visible,
+        // prioritize based on scroll position
+        if (sectionId === 'skills') {
+          const aboutSection = document.getElementById('about');
+          const skillsSection = document.getElementById('skills');
           
-          // Section is considered active if it's in the top half of the viewport
-          if (scrollPosition >= sectionTop - windowHeight * 0.3) {
-            newActiveSection = sections[i];
-            break;
+          if (aboutSection && skillsSection) {
+            const aboutRect = aboutSection.getBoundingClientRect();
+            const skillsRect = skillsSection.getBoundingClientRect();
+            
+            // If we're in the upper part of about section, keep about active
+            if (aboutRect.top > -window.innerHeight * 0.5 && aboutRect.top < window.innerHeight * 0.3) {
+              return; // Don't change to skills yet
+            }
           }
         }
-      }
-      
-      // Only update and animate if section changed
-      if (newActiveSection !== activeSectionRef.current) {
-        activeSectionRef.current = newActiveSection;
-        setActiveSection(newActiveSection);
         
-        // Find the dock item index for the new active section
-        const activeItemIndex = dockItems.findIndex(item => 
-          item.href === `#${newActiveSection}`
-        );
-        
-        // Animate the dock item highlight
-        if (activeItemIndex !== -1) {
-          // First reset all items
-          dockItems.forEach((_, index) => {
-            gsap.to(`.dock-item-${index}`, {
-              scale: 1,
-              duration: 0.3,
-              ease: 'power2.out',
-            });
-          });
+        if (sectionId !== activeSectionRef.current) {
+          activeSectionRef.current = sectionId;
+          setActiveSection(sectionId);
           
-          // Then highlight the active item
-          gsap.to(`.dock-item-${activeItemIndex}`, {
-            scale: 1.2,
-            duration: 0.4,
-            ease: 'back.out(1.7)',
-          });
+          // Find the dock item index for the new active section
+          const activeItemIndex = dockItems.findIndex(item => 
+            item.href === `#${sectionId}`
+          );
           
-          // Add a subtle glow effect
-          gsap.to(`.dock-item-${activeItemIndex} .MuiSvgIcon-root`, {
-            filter: 'drop-shadow(0 0 10px rgba(0, 212, 255, 0.6))',
-            duration: 0.3,
-            ease: 'power2.out',
-          });
-          
-          // Remove glow from other items
-          dockItems.forEach((_, index) => {
-            if (index !== activeItemIndex) {
-              gsap.to(`.dock-item-${index} .MuiSvgIcon-root`, {
-                filter: 'none',
+          // Animate the dock item highlight
+          if (activeItemIndex !== -1) {
+            // First reset all items
+            dockItems.forEach((_, index) => {
+              gsap.to(`.dock-item-${index}`, {
+                scale: 1,
                 duration: 0.3,
                 ease: 'power2.out',
               });
-            }
-          });
+            });
+            
+            // Then highlight the active item
+            gsap.to(`.dock-item-${activeItemIndex}`, {
+              scale: 1.2,
+              duration: 0.4,
+              ease: 'back.out(1.7)',
+            });
+            
+            // Add a subtle glow effect
+            gsap.to(`.dock-item-${activeItemIndex} .MuiSvgIcon-root`, {
+              filter: 'drop-shadow(0 0 10px rgba(0, 212, 255, 0.6))',
+              duration: 0.3,
+              ease: 'power2.out',
+            });
+            
+            // Remove glow from other items
+            dockItems.forEach((_, index) => {
+              if (index !== activeItemIndex) {
+                gsap.to(`.dock-item-${index} .MuiSvgIcon-root`, {
+                  filter: 'none',
+                  duration: 0.3,
+                  ease: 'power2.out',
+                });
+              }
+            });
+          }
         }
       }
-    };
+    }, observerOptions);
 
-    // Add throttled scroll event listener
-    let scrollTimeout: number | null = null;
-    const throttledHandleScroll = () => {
-      if (scrollTimeout) return;
-      scrollTimeout = window.setTimeout(() => {
-        handleScroll();
-        scrollTimeout = null;
-      }, 16); // ~60fps
-    };
-    
-    window.addEventListener('scroll', throttledHandleScroll, { passive: true });
-    
-    // Check initial position
-    handleScroll();
+    // Observe all sections
+    sectionElements.forEach(section => {
+      observer.observe(section);
+    });
 
     // Cleanup
     return () => {
-      window.removeEventListener('scroll', throttledHandleScroll);
-      if (scrollTimeout) {
-        clearTimeout(scrollTimeout);
-      }
+      observer.disconnect();
     };
   }, []);
 
