@@ -55,21 +55,21 @@ const Dock: React.FC = () => {
 
       const sections = document.querySelectorAll('#home, #about, #skills, #projects, #contact');
       
-      const observer = new IntersectionObserver((entries) => {
+      const observer = new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
         if (isProcessingRef.current) return;
         
-        let maxRatio = 0;
-        let activeEntry: IntersectionObserverEntry | null = null;
+        // Find the most visible section
+        const visibleEntries = entries.filter(entry => entry.isIntersecting);
         
-        entries.forEach(entry => {
-          if (entry.isIntersecting && entry.intersectionRatio > maxRatio) {
-            maxRatio = entry.intersectionRatio;
-            activeEntry = entry;
-          }
-        });
+        if (visibleEntries.length === 0) return;
         
-        if (activeEntry && maxRatio > 0.1) {
-          const sectionId = activeEntry.target.id;
+        // Get the entry with highest intersection ratio
+        const mostVisible = visibleEntries.reduce((prev, current) => 
+          current.intersectionRatio > prev.intersectionRatio ? current : prev
+        );
+        
+        if (mostVisible.intersectionRatio > 0.1) {
+          const sectionId = (mostVisible.target as HTMLElement).id;
           
           if (sectionId !== activeSectionRef.current) {
             isProcessingRef.current = true;
