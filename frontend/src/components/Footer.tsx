@@ -29,13 +29,13 @@ const Footer: React.FC = () => {
     },
     { 
       icon: LinkedIn, 
-      url: 'https://linkedin.com/in/dhairya-solanki', 
+      url: 'https://www.linkedin.com/in/dhairya-solanki-183630190', 
       label: 'LinkedIn',
       color: '#0077b5'
     },
     { 
       icon: Instagram, 
-      url: 'https://instagram.com/dhairya_911', 
+      url: 'https://www.instagram.com/dhairya_911?igsh=MWs1NGh1M2lqeXI3NQ==', 
       label: 'Instagram',
       color: '#e4405f'
     },

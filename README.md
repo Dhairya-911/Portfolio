@@ -183,8 +183,9 @@ This project is open source and available under the [MIT License](LICENSE).
 
 **Dhairya Solanki**
 - Email: dvsolankilm30@gmail.com
-- LinkedIn: [dhairya-solanki](https://linkedin.com/in/dhairya-solanki)
+- LinkedIn: [dhairya-solanki-183630190](https://www.linkedin.com/in/dhairya-solanki-183630190)
 - GitHub: [Dhairya-911](https://github.com/Dhairya-911)
+- Instagram: [dhairya_911](https://www.instagram.com/dhairya_911?igsh=MWs1NGh1M2lqeXI3NQ==)
 - Portfolio: [solankidhairya.vercel.app](https://solankidhairya.vercel.app)
 
 ---
