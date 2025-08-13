@@ -35,13 +35,13 @@ const Footer: React.FC = () => {
     },
     { 
       icon: Instagram, 
-      url: 'https://instagram.com/dhairya_solanki', 
+      url: 'https://instagram.com/dhairya_911', 
       label: 'Instagram',
       color: '#e4405f'
     },
     { 
       icon: Email, 
-      url: 'mailto:solankidhairya911@gmail.com', 
+      url: 'mailto:dvsolankilm30@gmail.com', 
       label: 'Email',
       color: '#ea4335'
     },
@@ -206,14 +206,14 @@ const Footer: React.FC = () => {
                 <Email sx={{ color: '#00d4ff', fontSize: '1.2rem' }} />
                 <Typography
                   component="a"
-                  href="mailto:solankidhairya911@gmail.com"
+                  href="mailto:dvsolankilm30@gmail.com"
                   sx={{
                     color: 'text.secondary',
                     textDecoration: 'none',
                     '&:hover': { color: '#00d4ff' },
                   }}
                 >
-                  solankidhairya911@gmail.com
+                  dvsolankilm30@gmail.com
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
@@ -278,10 +278,6 @@ const Footer: React.FC = () => {
               {currentYear} Dhairya Solanki. All rights reserved.
             </Typography>
           </Box>
-          
-          <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
-            Made with ❤️ using React & Material-UI
-          </Typography>
         </Box>
       </Container>
     </Box>
