@@ -12,7 +12,7 @@ import {
   Security,
   Html,
   Css,
-  JavaScript,
+  Javascript,
   GitHub,
   Storage,
   DataObject,
@@ -343,7 +343,7 @@ const About: React.FC = () => {
                         },
                       }}
                     >
-                      <JavaScript sx={{ fontSize: '2.5rem' }} />
+                      <Javascript sx={{ fontSize: '2.5rem' }} />
                     </Box>
                     <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
                       JavaScript
